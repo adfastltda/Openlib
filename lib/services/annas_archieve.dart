@@ -43,7 +43,7 @@ class BookInfoData extends BookData {
 }
 
 class AnnasArchieve {
-  static const String baseUrl = "https://annas-archive.org";
+  static const String baseUrl = "https://annas-archive.se";
 
   final Dio dio = Dio();
 
