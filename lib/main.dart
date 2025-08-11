@@ -42,14 +42,14 @@ void main() async {
       await dataBase.getPreference('darkMode') == 0 ? false : true;
   bool openPdfwithExternalapp = await dataBase
               .getPreference('openPdfwithExternalApp')
-              .catchError((e) => print(e)) ==
+              .catchError((e) {}) ==
           0
       ? false
       : true;
 
   bool openEpubwithExternalapp = await dataBase
               .getPreference('openEpubwithExternalApp')
-              .catchError((e) => print(e)) ==
+              .catchError((e) {}) ==
           0
       ? false
       : true;

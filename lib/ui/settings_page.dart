@@ -24,31 +24,23 @@ import 'package:openlib/state/state.dart'
         openEpubWithExternalAppProvider;
 
 Future<void> requestStoragePermission() async {
-  bool permissionGranted = false;
   // Check whether the device is running Android 11 or higher
   DeviceInfoPlugin plugin = DeviceInfoPlugin();
   AndroidDeviceInfo android = await plugin.androidInfo;
   // Android < 11
   if (android.version.sdkInt < 33) {
-    if (await Permission.storage.request().isGranted) {
-      permissionGranted = true;
-    } else if (await Permission.storage.request().isPermanentlyDenied) {
+    final status = await Permission.storage.request();
+    if (status.isPermanentlyDenied) {
       await openAppSettings();
     }
   }
   // Android > 11
   else {
-    if (await Permission.manageExternalStorage.request().isGranted) {
-      permissionGranted = true;
-    } else if (await Permission.manageExternalStorage
-        .request()
-        .isPermanentlyDenied) {
+    final status = await Permission.manageExternalStorage.request();
+    if (status.isPermanentlyDenied) {
       await openAppSettings();
-    } else if (await Permission.manageExternalStorage.request().isDenied) {
-      permissionGranted = false;
     }
   }
-  print("Storage permission status: $permissionGranted");
 }
 
 class SettingsPage extends ConsumerWidget {
@@ -145,12 +137,11 @@ class SettingsPage extends ConsumerWidget {
                       await dataBase.getPreference('bookStorageDirectory');
                   String? pickedDirectory =
                       await FilePicker.platform.getDirectoryPath();
-                  if (pickedDirectory == null) {
-                    return;
-                  }
                   await requestStoragePermission();
                   // Attempt moving existing books to the new directory
-                  moveFolderContents(currentDirectory, pickedDirectory);
+                  if (currentDirectory != null && pickedDirectory != null) {
+                    moveFolderContents(currentDirectory, pickedDirectory);
+                  }
                   dataBase.savePreference(
                       'bookStorageDirectory', pickedDirectory);
                 },
@@ -163,7 +154,7 @@ class SettingsPage extends ConsumerWidget {
                       color: Theme.of(context).colorScheme.tertiary,
                     ),
                   ),
-                  Icon(Icons.folder),
+                  const Icon(Icons.folder),
                 ]),
             _PaddedContainer(
               onClick: () {

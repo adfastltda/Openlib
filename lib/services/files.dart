@@ -41,17 +41,17 @@ Future<void> moveFilesToAndroidInternalStorage() async {
 }
 
 Future<void> moveFolderContents(
-    String source_path, String destination_path) async {
-  final source = Directory(source_path);
+    String sourcePath, String destinationPath) async {
+  final source = Directory(sourcePath);
   source.listSync(recursive: false).forEach((var entity) {
     if (entity is Directory) {
       var newDirectory =
-          Directory('${destination_path}/${entity.path.split('/').last}');
+          Directory('$destinationPath/${entity.path.split('/').last}');
       newDirectory.createSync();
       moveFolderContents(entity.path, newDirectory.path);
       entity.deleteSync();
     } else if (entity is File) {
-      entity.copySync('${destination_path}/${entity.path.split('/').last}');
+      entity.copySync('$destinationPath/${entity.path.split('/').last}');
       entity.deleteSync();
     }
   });

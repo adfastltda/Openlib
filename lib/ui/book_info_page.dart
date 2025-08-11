@@ -231,6 +231,7 @@ class _ActionButtonWidgetState extends ConsumerState<ActionButtonWidget> {
                       }));
 
                       if (result != null) {
+                        if (!context.mounted) return;
                         await downloadFileWidget(
                             ref, context, widget.data, result);
                       }
@@ -318,7 +319,10 @@ Future<void> downloadFileWidget(WidgetRef ref, BuildContext context,
           // ignore: unused_result
           ref.refresh(myLibraryProvider);
           // ignore: use_build_context_synchronously
-          showSnackBar(context: context, message: 'Book has been downloaded!');
+          if (context.mounted) {
+            showSnackBar(
+                context: context, message: 'Book has been downloaded!');
+          }
         }
       },
       cancelDownlaod: (CancelToken downloadToken) {
@@ -328,6 +332,7 @@ Future<void> downloadFileWidget(WidgetRef ref, BuildContext context,
         ref.read(mirrorStatusProvider.notifier).state = val;
       },
       onDownlaodFailed: (msg) {
+        if (!context.mounted) return;
         Navigator.of(context).pop();
         showSnackBar(context: context, message: msg.toString());
       });
@@ -351,6 +356,7 @@ class _ShowDialog extends ConsumerWidget {
         (checkSumVerifyState == CheckSumProcessState.failed ||
             checkSumVerifyState == CheckSumProcessState.success)) {
       Future.delayed(const Duration(seconds: 1), () {
+        if (!context.mounted) return;
         Navigator.of(context).pop();
         if (checkSumVerifyState == CheckSumProcessState.failed) {
           _showWarningFileDialog(context);
